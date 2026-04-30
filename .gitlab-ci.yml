@@ -1,0 +1,12 @@
+stages:
+  - test
+
+default:
+  image: node:22
+
+react_lint:
+  stage: test
+  script:
+    - npm install
+    - npm run lint
+    - rm -rf ./node_modules || true

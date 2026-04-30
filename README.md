@@ -1,16 +1,49 @@
-# React + Vite
+# Booking App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Diagram
 
-## React Compiler
+![Local Development](diagram/Diagram.png)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Required
+create `.env`
+```
+ENVIRONMENT="dev"
+REACT_BACKEND_URL="http://localhost:8000"
 
-## Expanding the ESLint configuration
+VITE_ENV="dev"
+VITE_BACKEND="http://localhost:8000"
+VITE_SENTRY_DNS="https://...ingest.us.sentry.io/..."
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+SENTRY_DNS_REACT="https://...ingest.us.sentry.io/..."
+SENTRY_DNS_DJANGO="https://...ingest.us.sentry.io/..."
+
+MYSQL_ROOT_PASSWORD="booking"
+MYSQL_DATABASE="booking"
+MYSQL_USER="booking"
+MYSQL_PASSWORD="booking"
+
+RABBITMQ_DEFAULT_USER="guest"
+RABBITMQ_DEFAULT_PASS="guest"
+
+REDIS_HOST="redis"
+```
+
+> Note: see https://sentry.io/pricing/ for a Sentry free-trial account to gain access to the monitor dashboard
+
+## Execution
+`docker compose up --build --no-deps --force-recreate --remove-orphans`
+
+1. In terminal (Without Django, Redis, RabbitMq and Prometheus stack):
+```bash
+npm install
+npm run dev
+```
+
+2. Orchestration with Docker Compose (With Django, Redis, RabbitMq and Prometheus stack):
+```bash
+docker compose up --build --no-deps --force-recreate --remove-orphans
+```
+
+> Note: Running in orchestration will require commenting out to disable or [cloning the django backend](https://gitlab.com/LarryGeorges-Muala/hotel-booking-backend-django) code in the `compose.yaml` file to enable it
