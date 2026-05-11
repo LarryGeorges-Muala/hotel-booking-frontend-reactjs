@@ -57,7 +57,8 @@ function ModalProfile (props) {
             const response = await fetch(`${import.meta.env.VITE_BACKEND}/users/verify/`, {
               method: "POST",
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': props.csrfToken,
               },
               body: JSON.stringify(data)
             });
@@ -91,6 +92,7 @@ function ModalProfile (props) {
                 headers: {
                   'Content-Type': 'application/json',
                   'Authorization': `Bearer ${accessToken}`,
+                  'X-CSRFToken': props.csrfToken,
                 },
                 body: JSON.stringify(sessionObj)
               });
@@ -110,7 +112,8 @@ function ModalProfile (props) {
                     const createSession = await fetch(`${import.meta.env.VITE_BACKEND}/booking/session/`, {
                       method: "POST",
                       headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': props.csrfToken,
                       },
                       body: JSON.stringify(sessionObj)
                     });

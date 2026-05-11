@@ -36,7 +36,8 @@ function ModalLogout (props) {
           const response = await fetch(`${import.meta.env.VITE_BACKEND}/booking/reset/`, {
             method: "POST",
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'X-CSRFToken': props.csrfToken,
             },
             body: JSON.stringify(data)
           });

@@ -59,7 +59,8 @@ function ModalResetPassword (props) {
             const response = await fetch(`${import.meta.env.VITE_BACKEND}/users/verify/`, {
               method: "POST",
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': props.csrfToken,
               },
               body: JSON.stringify(data)
             });
@@ -82,7 +83,8 @@ function ModalResetPassword (props) {
               const updateUser = await fetch(`${import.meta.env.VITE_BACKEND}/users/reset/`, {
                 method: "POST",
                 headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': props.csrfToken,
                 },
                 body: JSON.stringify(sessionObj)
               });

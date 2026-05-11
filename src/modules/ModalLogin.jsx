@@ -81,7 +81,8 @@ function ModalLogin (props) {
             const response = await fetch(`${import.meta.env.VITE_BACKEND}/users/verify/`, {
               method: "POST",
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': props.csrfToken,
               },
               body: JSON.stringify(data)
             });
@@ -104,7 +105,8 @@ function ModalLogin (props) {
               const fetchUser = await fetch(`${import.meta.env.VITE_BACKEND}/users/login/`, {
                 method: "POST",
                 headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': props.csrfToken,
                 },
                 body: JSON.stringify(sessionObj)
               });
@@ -136,7 +138,8 @@ function ModalLogin (props) {
                     const createSession = await fetch(`${import.meta.env.VITE_BACKEND}/booking/session/`, {
                       method: "POST",
                       headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': props.csrfToken,
                       },
                       body: JSON.stringify(sessionRedisObj)
                     });

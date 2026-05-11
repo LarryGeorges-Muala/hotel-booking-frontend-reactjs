@@ -75,7 +75,8 @@ function ModalRegister (props) {
             const response = await fetch(`${import.meta.env.VITE_BACKEND}/users/verify/`, {
               method: "POST",
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': props.csrfToken,
               },
               body: JSON.stringify(data)
             });
@@ -91,7 +92,8 @@ function ModalRegister (props) {
               const createUser = await fetch(`${import.meta.env.VITE_BACKEND}/users/`, {
                 method: "POST",
                 headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': props.csrfToken,
                 },
                 body: JSON.stringify(data)
               });
@@ -122,7 +124,8 @@ function ModalRegister (props) {
               const createSession = await fetch(`${import.meta.env.VITE_BACKEND}/booking/session/`, {
                 method: "POST",
                 headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': props.csrfToken,
                 },
                 body: JSON.stringify(sessionObj)
               });
