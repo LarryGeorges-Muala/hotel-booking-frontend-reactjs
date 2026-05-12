@@ -42,3 +42,9 @@ node_modules/*
 # Misc
 *.DS_Store*
 **/*.DS_Store*
+
+# Jenkins
+.jenkins_configuration
+.jenkins_configuration/*
+**/.jenkins_configuration
+**/.jenkins_configuration/*
