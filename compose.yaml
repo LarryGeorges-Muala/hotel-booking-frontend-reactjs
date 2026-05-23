@@ -1,8 +1,21 @@
 # docker compose up --build --no-deps --force-recreate --remove-orphans
 services:
+  vulnerabilities:
+    container_name: vulnerabilities-react
+    build:
+      context: .
+      dockerfile: ./vulnerabilities.Dockerfile
+    networks:
+      - local_network
+    volumes:
+      - .:/app
+      - .vulnerabilities:/.vulnerabilities
+      - /app/.jenkins_configuration
+      - /app/node_modules
+    restart: unless-stopped
+
   jenkins:
-    image: jenkins/jenkins:lts-local
-    container_name: jenkins
+    container_name: jenkins-react
     build:
       context: .
       dockerfile: ./jenkins.Dockerfile
@@ -18,15 +31,16 @@ services:
       JAVA_OPTS: -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
     volumes:
       - .:/app
-      - /app/.jenkins_configuration
       - .jenkins_configuration:/var/jenkins_home
+      - /app/.jenkins_configuration
+      - /app/node_modules
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/bin/docker
     restart: unless-stopped
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: prometheus
+    container_name: prometheus-react
     ports:
       - "9090:9090" # Access UI at http://localhost:9090
     volumes:
@@ -35,14 +49,14 @@ services:
 
   node-exporter:
     image: prom/node-exporter:latest
-    container_name: node-exporter
+    container_name: node-exporter-react
     ports:
       - "9100:9100" # Exposes hardware/OS metrics
     restart: unless-stopped
 
   grafana:
     image: grafana/grafana:latest
-    container_name: grafana
+    container_name: grafana-react
     ports:
       - "3000:3000" # Access UI at http://localhost:3000
     environment:
@@ -85,9 +99,8 @@ services:
       # - 127.0.0.1:6379:6379
       - 0.0.0.0:6379:6379
 
-  backend-django:
-    container_name: backend-django
-    image: django-backend:latest
+  backend:
+    container_name: backend-react
     networks:
       - local_network
     build:
@@ -96,6 +109,7 @@ services:
       dockerfile: ./backend.Dockerfile
     volumes:
       - ../../hotel-booking-backend-django/:/app
+      - /app/.jenkins_configuration
     environment:
       ENV: ${ENVIRONMENT}
       SECRET_KEY: ${SECRET_KEY}
@@ -110,8 +124,7 @@ services:
         condition: service_started
 
   frontend:
-    container_name: frontend
-    image: reactjs-frontend:latest
+    container_name: frontend-react
     networks:
       - local_network
     build:
@@ -119,6 +132,7 @@ services:
       dockerfile: ./frontend.Dockerfile
     volumes:
       - .:/app
+      - /app/.jenkins_configuration
       - /app/node_modules  # Prevents local node_modules from overwriting container's
     environment:
       - CHOKIDAR_USEPOLLING=true  # Required for some OS/Docker setups to detect changes
@@ -133,10 +147,56 @@ services:
 
   nuclei:
     image: projectdiscovery/nuclei:latest
-    container_name: nuclei-dast
-    command: -l /app/dast.urls.txt -jsonl /app/results.jsonl -validate
+    container_name: nuclei-dast-react
+    entrypoint: 
+      - /bin/sh
+      - -c
+      - |
+        rm -rf /.vulnerabilities/* \
+        && nuclei -verbose \
+          -list /app/dast.urls.txt \
+          -output /.vulnerabilities/nuclei.batteringram.log \
+          -trace-log /.vulnerabilities/nuclei.batteringram.trace.log \
+          -error-log /.vulnerabilities/nuclei.batteringram.error.log \
+          -store-resp-dir /.vulnerabilities/nuclei.batteringram.report \
+          -stats \
+          -timestamp \
+          -matcher-status \
+          -debug \
+          -debug-req \
+          -debug-resp \
+          -attack-type batteringram \
+        && nuclei -verbose \
+          -list /app/dast.urls.txt \
+          -output /.vulnerabilities/nuclei.pitchfork.log \
+          -trace-log /.vulnerabilities/nuclei.pitchfork.trace.log \
+          -error-log /.vulnerabilities/nuclei.pitchfork.error.log \
+          -store-resp-dir /.vulnerabilities/nuclei.pitchfork.report \
+          -stats \
+          -timestamp \
+          -matcher-status \
+          -debug \
+          -debug-req \
+          -debug-resp \
+          -attack-type pitchfork \
+        && nuclei -verbose \
+          -list /app/dast.urls.txt \
+          -output /.vulnerabilities/nuclei.clusterbomb.log \
+          -trace-log /.vulnerabilities/nuclei.clusterbomb.trace.log \
+          -error-log /.vulnerabilities/nuclei.clusterbomb.error.log \
+          -store-resp-dir /.vulnerabilities/nuclei.clusterbomb.report \
+          -stats \
+          -timestamp \
+          -matcher-status \
+          -debug \
+          -debug-req \
+          -debug-resp \
+          -attack-type clusterbomb
     volumes:
       - .:/app
+      - .vulnerabilities:/.vulnerabilities
+      - /app/.jenkins_configuration
+      - /app/node_modules
     depends_on:
       frontend:
         condition: service_started
