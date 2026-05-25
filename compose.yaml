@@ -10,7 +10,10 @@ services:
     volumes:
       - .:/app
       - .vulnerabilities:/.vulnerabilities
-      - /app/.jenkins_configuration
+      - /app/.alertmanager/_data
+      - /app/.grafana/_data
+      - /app/.jenkins-data
+      - /app/.prometheus/_data
       - /app/node_modules
     restart: unless-stopped
 
@@ -31,8 +34,11 @@ services:
       JAVA_OPTS: -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
     volumes:
       - .:/app
-      - .jenkins_configuration:/var/jenkins_home
-      - /app/.jenkins_configuration
+      - .jenkins-data:/var/jenkins_home
+      - /app/.alertmanager/_data
+      - /app/.grafana/_data
+      - /app/.jenkins-data
+      - /app/.prometheus/_data
       - /app/node_modules
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/bin/docker
@@ -41,26 +47,79 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus-react
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/.prometheus/_data'
+      - '--web.enable-otlp-receiver'
+    networks:
+      - local_network
     ports:
       - "9090:9090" # Access UI at http://localhost:9090
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Mount config file
+      - .prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml # Mount config file
+      - .prometheus/rules/prometheus.rules:/etc/prometheus/prometheus.rules # Mount alert file
+      - .prometheus/_data:/.prometheus/_data
     restart: unless-stopped
 
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter-react
+    networks:
+      - local_network
     ports:
       - "9100:9100" # Exposes hardware/OS metrics
     restart: unless-stopped
 
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager-react
+    ports:
+      - "9093:9093"
+    networks:
+      - local_network
+    volumes:
+      - .alertmanager/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - .alertmanager/_data:/.alertmanager/_data
+    environment:
+      - ALERT_MANAGER_SLACK_API_URL=${ALERT_MANAGER_SLACK_API_URL}
+      - ALERT_MANAGER_SLACK_API_CHANNEL=${ALERT_MANAGER_SLACK_API_CHANNEL}
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/.alertmanager/_data"
+    restart: unless-stopped
+
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:latest
+  #   container_name: cadvisor
+  #   privileged: true
+  #   networks:
+  #     - local_network
+  #   ports:
+  #     - 8090:8080 # Access UI at http://localhost:8090/docker/frontend-react
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:rw
+  #     - /sys:/sys:ro
+  #   # cgroup: host
+  #   restart: unless-stopped
+  #   depends_on:
+  #     backend-react:
+  #       condition: service_started
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana-react
+    networks:
+      - local_network
     ports:
       - "3000:3000" # Access UI at http://localhost:3000
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin # Default login: admin / admin
+    volumes:
+      - .grafana/_data:/var/lib/grafana
+      - .grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - .grafana/datasources:/etc/grafana/provisioning/datasources
+      - .grafana/alerting:/etc/grafana/provisioning/alerting
     restart: unless-stopped
 
   mysql:
@@ -99,17 +158,20 @@ services:
       # - 127.0.0.1:6379:6379
       - 0.0.0.0:6379:6379
 
-  backend:
+  backend-react:
     container_name: backend-react
     networks:
       - local_network
     build:
-      # https://gitlab.com/LarryGeorges-Muala/hotel-booking-backend-django
-      context: ../../hotel-booking-backend-django/
+      # https://github.com/LarryGeorges-Muala/hotel-booking-backend-django
+      context: ../hotel-booking-backend-django/hotel-booking-backend-django/
       dockerfile: ./backend.Dockerfile
     volumes:
-      - ../../hotel-booking-backend-django/:/app
-      - /app/.jenkins_configuration
+      - ../hotel-booking-backend-django/hotel-booking-backend-django/:/app
+      - /app/.alertmanager/_data
+      - /app/.grafana/_data
+      - /app/.jenkins-data
+      - /app/.prometheus/_data
     environment:
       ENV: ${ENVIRONMENT}
       SECRET_KEY: ${SECRET_KEY}
@@ -132,7 +194,10 @@ services:
       dockerfile: ./frontend.Dockerfile
     volumes:
       - .:/app
-      - /app/.jenkins_configuration
+      - /app/.alertmanager/_data
+      - /app/.grafana/_data
+      - /app/.jenkins-data
+      - /app/.prometheus/_data
       - /app/node_modules  # Prevents local node_modules from overwriting container's
     environment:
       - CHOKIDAR_USEPOLLING=true  # Required for some OS/Docker setups to detect changes
@@ -142,7 +207,9 @@ services:
     ports:
       - 5173:5173
     depends_on:
-      backend-django:
+      backend-react:
+        condition: service_started
+      prometheus:
         condition: service_started
 
   nuclei:
@@ -154,7 +221,7 @@ services:
       - |
         rm -rf /.vulnerabilities/* \
         && nuclei -verbose \
-          -list /app/dast.urls.txt \
+          -list /app/.dast/nuclei/config/dast.urls.txt \
           -output /.vulnerabilities/nuclei.batteringram.log \
           -trace-log /.vulnerabilities/nuclei.batteringram.trace.log \
           -error-log /.vulnerabilities/nuclei.batteringram.error.log \
@@ -195,7 +262,10 @@ services:
     volumes:
       - .:/app
       - .vulnerabilities:/.vulnerabilities
-      - /app/.jenkins_configuration
+      - /app/.alertmanager/_data
+      - /app/.grafana/_data
+      - /app/.jenkins-data
+      - /app/.prometheus/_data
       - /app/node_modules
     depends_on:
       frontend:

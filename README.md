@@ -1,19 +1,22 @@
-# Booking App
+# Basic Hotel Booking App
 
 ## Diagram
 
 ![Local Development](diagram/Diagram.png)
 
+---
 
 ## CI/CD
 
 > GitLab: [.gitlab-ci.yml](.gitlab-ci.yml)
 
+---
 
 ## GitOps
 
-> Argo-CD Application Spec: [argo-cd-application-spec.yaml](argo-cd/argo-cd-application-spec.yaml)
+> Argo-CD Application Spec: [argo-cd-application-spec.yaml](.argo-cd/argo-cd-application-spec.yaml)
 
+---
 
 ## DevSecOps
 
@@ -23,7 +26,7 @@
 
 > Docker Local Vulnerability Scanner, SBOM and SAST Container: [compose.yaml](compose.yaml) / [vulnerabilities.Dockerfile](vulnerabilities.Dockerfile)
 
-> DAST Scanner Container: [compose.yaml](compose.yaml)
+> DAST Scanner Container and Config: [compose.yaml](compose.yaml)
 
 - Vulnerability Scanner: [Trivy](https://github.com/aquasecurity/trivy)
 
@@ -33,6 +36,39 @@
 
 - DAST: [Nuclei](https://github.com/projectdiscovery/nuclei)
 
+---
+
+## SRE Monitoring
+
+### Metrics
+
+> Prometheus Config: [.prometheus/config/prometheus.yml](.prometheus/config/prometheus.yml)
+
+> Prometheus Rules: [.prometheus/rules/prometheus.rules](.prometheus/rules/prometheus.rules)
+
+> Prometheus Container: [compose.yaml](compose.yaml)
+
+### Resources and Networking
+
+> OpenTelemetry Config: [.opentelemetry/config/otelcol-metrics-config.yaml](.opentelemetry/config/otelcol-metrics-config.yaml)
+
+### Visualization
+
+> Grafana Dashboard Host Resources: [.grafana/dashboards/react-host-metrics-dashboard.json](.grafana/dashboards/react-host-metrics-dashboard.json)
+
+> Grafana Datasource: [.grafana/datasources/prometheus-datasource.yaml](.grafana/datasources/prometheus-datasource.yaml)
+
+> Grafana Alert: [.grafana/alerting/sample-react-host-alert.yaml](.grafana/alerting/sample-react-host-alert.yaml) / [.grafana/alerting/sample-react-alert-resource.yaml](.grafana/alerting/sample-react-alert-resource.yaml)
+
+> Grafana Container: [compose.yaml](compose.yaml)
+
+### Alerting
+
+> Alertmanager Config: [.alertmanager/config/alertmanager.yml](.alertmanager/config/alertmanager.yml)
+
+> Alertmanager Container: [compose.yaml](compose.yaml)
+
+---
 
 ## Frontend Setup
 
@@ -59,10 +95,14 @@ RABBITMQ_DEFAULT_USER="guest"
 RABBITMQ_DEFAULT_PASS="guest"
 
 REDIS_HOST="redis"
+
+ALERT_MANAGER_SLACK_API_URL="https://hooks.slack.com/services/..."
+ALERT_MANAGER_SLACK_API_CHANNEL="#..."
 ```
 
 > Note: see https://sentry.io/pricing/ for a Sentry free-trial account to gain access to the monitor dashboard
 
+---
 
 ## Frontend Execution
 `docker compose up --build --no-deps --force-recreate --remove-orphans`

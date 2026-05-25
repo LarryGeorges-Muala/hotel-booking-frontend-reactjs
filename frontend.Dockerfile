@@ -1,6 +1,23 @@
 FROM node:22
 
-WORKDIR /app 
+# Telemetry
+WORKDIR /telemetry
+
+RUN wget https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.152.0/otelcol_0.152.0_linux_arm64.deb
+
+RUN dpkg -i otelcol_0.152.0_linux_arm64.deb
+
+RUN rm -rf otelcol_0.152.0_linux_arm64.deb
+
+COPY ./.opentelemetry/config/otelcol-metrics-config.yaml .opentelemetry/config/otelcol-metrics-config.yaml
+
+COPY ./.opentelemetry/config/otelcol-default-config.yaml .opentelemetry/config/otelcol-default-config.yaml
+
+RUN nohup bash -c "otelcol --config .opentelemetry/config/otelcol-metrics-config.yaml | otelcol --config .opentelemetry/config/otelcol-default-config.yaml" &
+
+
+# Frontend
+WORKDIR /app
 
 COPY package*.json ./
 
@@ -8,9 +25,17 @@ RUN npm install
 
 COPY . .
 
+RUN rm -rf ./.alertmanager \
+    && rm -rf ./.dast \
+    && rm -rf ./.grafana \
+    && rm -rf ./.jenkins-data \
+    && rm -rf ./.opentelemetry \
+    && rm -rf ./.prometheus \
+    && rm -rf ./.vulnerabilities
+
 RUN npm run lint
 
-EXPOSE 3306 4001 5173 5672 6379
+EXPOSE 3306 4001 5173 5672 6379 8888
 
 CMD [ "npm","run","server" ]
 

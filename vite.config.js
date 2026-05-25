@@ -16,7 +16,8 @@ export default defineConfig({
     origin: "http://0.0.0.0:5173",
     allowedHosts: [
       "localhost",
-      "frontend"
+      "frontend",
+      "frontend-react"
     ],
   },
 });

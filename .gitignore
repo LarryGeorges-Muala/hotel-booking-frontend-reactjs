@@ -43,16 +43,26 @@ node_modules/*
 *.DS_Store*
 **/*.DS_Store*
 
+# Alertmanager
+.alertmanager/_data/*
+**/.alertmanager/_data/*
+
+# Prometheus
+data
+**/data
+.prometheus/_data/*
+**/.prometheus/_data/*
+
+# Grafana
+.grafana/_data/*
+**/.grafana/_data/*
+
 # Jenkins
-.jenkins_configuration
-.jenkins_configuration/*
-**/.jenkins_configuration
-**/.jenkins_configuration/*
+.jenkins-data
+.jenkins-data/*
+**/.jenkins-data
+**/.jenkins-data/*
 
 # Local Vulnerabilities Report
 .vulnerabilities
 **/.vulnerabilities
-.nuclei
-.nuclei/*
-**/.nuclei
-**/.nuclei/*
