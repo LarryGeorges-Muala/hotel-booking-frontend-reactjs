@@ -130,7 +130,7 @@ docker compose up --build --no-deps --force-recreate --remove-orphans
 
 > Ansible Host Dockerfile: [vulnerabilities.Dockerfile](vulnerabilities.Dockerfile)
 
-> Ansible Python3.12+ Requirements: [.ansible/ansible.requirements.txt](.ansible/ansible.requirements.txt)
+> Ansible Python3.12+ Requirements: [ansible/ansible-requirements.txt](ansible/ansible-requirements.txt)
 
 ```bash
 python3 -m venv ./.ansible/.venv-ansible
