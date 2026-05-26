@@ -26,6 +26,7 @@ RUN npm install
 COPY . .
 
 RUN rm -rf ./.alertmanager \
+    && rm -rf ./.ansible \
     && rm -rf ./.dast \
     && rm -rf ./.grafana \
     && rm -rf ./.jenkins-data \
