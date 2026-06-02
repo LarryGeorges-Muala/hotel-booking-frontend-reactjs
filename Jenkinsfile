@@ -67,7 +67,7 @@ pipeline {
                 timeout(time: 10, unit: 'MINUTES') {
                     retry(2) {
                         sh '''
-                            docker build -f frontend.Dockerfile -t backend/django:$GIT_COMMIT .
+                            docker build -f frontend.Dockerfile -t frontend/react:$GIT_COMMIT .
                         '''
                     }
                 }
@@ -112,6 +112,37 @@ pipeline {
                             go build;
                             mv nuclei /usr/local/bin/;
                             nuclei -version;
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Secrets - NonProd') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    retry(1) {
+                        sh '''
+                            echo "Push secrets to Non-Prod Secrets Server with version $GIT_COMMIT"
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Secrets - Prod') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'master'
+                }
+            }
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    retry(1) {
+                        sh '''
+                            echo "Push secrets to Prod Secrets Server with version $GIT_COMMIT"
                         '''
                     }
                 }
