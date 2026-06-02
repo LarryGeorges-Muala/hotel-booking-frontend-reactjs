@@ -117,5 +117,36 @@ pipeline {
                 }
             }
         }
+        stage('ArgoCD - NonProd') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    retry(1) {
+                        sh '''
+                            argocd app sync argocd/booking-frontend-dev
+                        '''
+                    }
+                }
+            }
+        }
+        stage('ArgoCD - Prod') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'master'
+                }
+            }
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    retry(1) {
+                        sh '''
+                            argocd app sync argocd/booking-frontend-prod
+                        '''
+                    }
+                }
+            }
+        }
     }
 }
