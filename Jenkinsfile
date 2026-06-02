@@ -84,8 +84,8 @@ pipeline {
                 }
             }
             steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    retry(2) {
+                timeout(time: 30, unit: 'MINUTES') {
+                    retry(0) {
                         sh '''
                             echo "Run Regression Pack"
                         '''
@@ -104,8 +104,8 @@ pipeline {
                 }
             }
             steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    retry(2) {
+                timeout(time: 30, unit: 'MINUTES') {
+                    retry(0) {
                         sh '''
                             git clone https://github.com/projectdiscovery/nuclei.git;
                             cd nuclei/cmd/nuclei;
