@@ -11,9 +11,12 @@ services:
       - .:/app
       - .vulnerabilities:/.vulnerabilities
       - /app/.alertmanager/_data
+      - /app/.alloy/_data
       - /app/.grafana/_data
       - /app/.jenkins-data
+      - /app/.loki/_data
       - /app/.prometheus/_data
+      - /app/.tempo/_data
       - /app/node_modules
     restart: unless-stopped
 
@@ -36,9 +39,13 @@ services:
       - .:/app
       - .jenkins-data:/var/jenkins_home
       - /app/.alertmanager/_data
+      - /app/.alloy/_data
       - /app/.grafana/_data
       - /app/.jenkins-data
+      - /app/.loki/_data
       - /app/.prometheus/_data
+      - /app/.tempo/_data
+      - /app/.vulnerabilities
       - /app/node_modules
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/bin/docker
@@ -169,9 +176,13 @@ services:
     volumes:
       - ../hotel-booking-backend-django/hotel-booking-backend-django/:/app
       - /app/.alertmanager/_data
+      - /app/.alloy/_data
       - /app/.grafana/_data
       - /app/.jenkins-data
+      - /app/.loki/_data
       - /app/.prometheus/_data
+      - /app/.tempo/_data
+      - /app/.vulnerabilities
     environment:
       ENV: ${ENVIRONMENT}
       SECRET_KEY: ${SECRET_KEY}
@@ -195,9 +206,13 @@ services:
     volumes:
       - .:/app
       - /app/.alertmanager/_data
+      - /app/.alloy/_data
       - /app/.grafana/_data
       - /app/.jenkins-data
+      - /app/.loki/_data
       - /app/.prometheus/_data
+      - /app/.tempo/_data
+      - /app/.vulnerabilities
       - /app/node_modules  # Prevents local node_modules from overwriting container's
     environment:
       - CHOKIDAR_USEPOLLING=true  # Required for some OS/Docker setups to detect changes

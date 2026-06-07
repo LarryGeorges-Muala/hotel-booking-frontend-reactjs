@@ -32,6 +32,7 @@ function App() {
   const [selectedUnitPrice, setSelectedUnitPrice] = useState(0);
   const [selectedUnitBreakfastOption, setSelectedUnitBreakfastOption] = useState(false);
   const [selectedUnitBreakfastPrice, setSelectedUnitBreakfastPrice] = useState(0);
+  const [selectedUnitNextAvailable, setSelectedUnitNextAvailable] = useState('');
 
   /* Blocked Calendar Entries */
   const [blockedCalendarEntries, setBlockedCalendarEntries] = useState([]);
@@ -86,6 +87,7 @@ function App() {
           setSelectedUnitPrice={(x) => {setSelectedUnitPrice(x);}}
           setSelectedUnitBreakfastOption={(x) => {setSelectedUnitBreakfastOption(x);}}
           setSelectedUnitBreakfastPrice={(x) => {setSelectedUnitBreakfastPrice(x);}}
+          setSelectedUnitNextAvailable={(x) => {setSelectedUnitNextAvailable(x);}}
           setBlockedCalendarEntries={(x) => {setBlockedCalendarEntries(x);}}
         />
         {/* Booking Form */}
@@ -120,6 +122,7 @@ function App() {
           selectedUnitPrice={selectedUnitPrice}
           selectedUnitBreakfastOption={selectedUnitBreakfastOption}
           selectedUnitBreakfastPrice={selectedUnitBreakfastPrice}
+          selectedUnitNextAvailable={selectedUnitNextAvailable}
         />
         }
       </section>

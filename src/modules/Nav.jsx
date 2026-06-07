@@ -154,7 +154,6 @@ function Nav (props) {
               } else {
                 setBlockedCalendarEntries(blockedCalendarEntriesArray);
               }
-              
               // Pre-fill booking fields
               if (Object.hasOwn(result, 'email')) {
                 EmailFunction(result.email);

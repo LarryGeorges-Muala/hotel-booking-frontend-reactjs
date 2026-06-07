@@ -523,7 +523,8 @@
 
 .unit-image {
   width: 100%;
-  height: auto;
+  /* height: auto; */
+  height: 200px;
 }
 
 .unit-description {
@@ -559,6 +560,25 @@
   padding: 0 6px;
   float: left;
   width: 24.99999%;
+}
+
+.unit-img-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  height: 350px;
+  /* height: 100%; */
+}
+
+.unit-img-text-holder {
+  padding: 5px 20px;
+  font-size: 16px;
+  background: #efefef;
+  background: black;
+  text-align: center;
+  /* margin-bottom: -200px; */
+  display: block;
 }
 
 @media only screen and (max-width: 700px) {

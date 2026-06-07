@@ -122,7 +122,8 @@ function FormBooking (props) {
   /* Check-in calendar min date */
   function GenerateMinDate() {
     try {
-      return subDays(new Date(), 0);
+      // return subDays(new Date(), 0);
+      return new Date(props.selectedUnitNextAvailable);
     } catch (err) {
       LoggerError(err);
     }
@@ -132,7 +133,8 @@ function FormBooking (props) {
   /* Check-out calendar min date */
   function GenerateMinDateFromToday() {
     try {
-      return addDays(new Date(), 1);
+      // return addDays(new Date(), 1);
+      return addDays(new Date(props.selectedUnitNextAvailable), 1);
     } catch (err) {
       LoggerError(err);
     }
@@ -289,7 +291,8 @@ function FormBooking (props) {
             labelClassName='label'
             formEntry='booking'
             entry={bookingDatesCheckin}
-            minEntry={GenerateMinDate()}
+            // minEntry={GenerateMinDate()}
+            minEntry={new Date(props.selectedUnitNextAvailable)}
             entryOnChange={
               (date) => {
                 checkinValueWorkaround = date;
