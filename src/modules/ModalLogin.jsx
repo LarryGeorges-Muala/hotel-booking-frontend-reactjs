@@ -119,9 +119,9 @@ function ModalLogin (props) {
               let fetchUserResult = await fetchUser.json();
               // fetchUserResult = JSON.stringify(fetchUserResult);
               // fetchUserResult = JSON.parse(fetchUserResult);
-              LoggerInfo(typeof fetchUserResult);
-              LoggerInfo(`Success: ${fetchUserResult}`);
-              LoggerInfo(fetchUserResult.data.accessToken);
+              // LoggerInfo(typeof fetchUserResult);
+              // LoggerInfo(`Success: ${fetchUserResult}`);
+              // LoggerInfo(fetchUserResult.data.accessToken);
 
               if (fetchUserResult) {
 

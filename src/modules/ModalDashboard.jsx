@@ -44,9 +44,9 @@ function ModalDashboard (props) {
           let result = await response.json();
           // result = JSON.stringify(result);
           // result = JSON.parse(result);
-          LoggerInfo(typeof result);
-          LoggerInfo(`Success: ${result}`);
-          LoggerInfo(`Success: ${result.data}`);
+          // LoggerInfo(typeof result);
+          // LoggerInfo(`Success: ${result}`);
+          // LoggerInfo(`Success: ${result.data}`);
           // LoggerInfo(result[0]);
 
           props.setModalDashboardData(

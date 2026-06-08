@@ -15,7 +15,7 @@ import InputSubmit from './components/InputSubmit'
 import InputTime from './components/InputTime'
 import LoggerError from './components/LoggerError'
 import LoggerInfo from './components/LoggerInfo'
-import { subDays, addDays } from 'date-fns'
+import { addDays } from 'date-fns'
 import Cards from 'react-credit-cards-2';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 
