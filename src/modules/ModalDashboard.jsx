@@ -38,16 +38,20 @@ function ModalDashboard (props) {
               'Content-Type': 'application/json',
               'X-CSRFToken': props.csrfToken,
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include',
           });
           let result = await response.json();
-          result = JSON.stringify(result);
-          result = JSON.parse(result);
-          // LoggerInfo(typeof result);
-          // LoggerInfo(`Success: ${result}`);
+          // result = JSON.stringify(result);
+          // result = JSON.parse(result);
+          LoggerInfo(typeof result);
+          LoggerInfo(`Success: ${result}`);
+          LoggerInfo(`Success: ${result.data}`);
           // LoggerInfo(result[0]);
 
-          props.setModalDashboardData(JSON.stringify(result, null, 2));
+          props.setModalDashboardData(
+            JSON.stringify(result.data, null, 2)
+          );
         } catch (err) {
           LoggerError(err);
         }

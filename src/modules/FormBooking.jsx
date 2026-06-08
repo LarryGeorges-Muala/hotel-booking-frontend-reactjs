@@ -16,6 +16,8 @@ import InputTime from './components/InputTime'
 import LoggerError from './components/LoggerError'
 import LoggerInfo from './components/LoggerInfo'
 import { subDays, addDays } from 'date-fns'
+import Cards from 'react-credit-cards-2';
+import 'react-credit-cards-2/dist/es/styles-compiled.css';
 
 function FormBooking (props) {
 
@@ -41,8 +43,27 @@ function FormBooking (props) {
   /* Booking form */
   const formRef = useRef(null);
   const submitFormRef = useRef(null);
+  const nameOnCardRef = useRef(null);
   /* Booking state */
   const [bookingStateElement, setBookingStateElement] = useState('');
+  /* Card */
+  const [state, setState] = useState({
+    number: '',
+    expiry: '',
+    cvc: '',
+    name: '',
+    focus: '',
+  });
+
+  const handleInputChange = (evt) => {
+    const { name, value } = evt.target;
+    
+    setState((prev) => ({ ...prev, [name]: value }));
+  }
+
+  const handleInputFocus = (evt) => {
+    setState((prev) => ({ ...prev, focus: evt.target.name }));
+  }
 
   /* Booking state functions */
   function ManualFormSubmission() {
@@ -457,6 +478,72 @@ function FormBooking (props) {
             readOnly={true}
           />
           <span className='modal-component-textarea-price-duration'>For {bookingDuration} night(s)</span>
+          {/* Card */}
+          <div className='form-container-card-block'>
+            <Cards
+              number={state.number}
+              expiry={state.expiry}
+              cvc={state.cvc}
+              name={state.name}
+              focused={state.focus}
+            />
+            <span className='form-container-card-block-text'>(Visa: 49... | Mastercard: 51... | Dinners: 36... | Amex: 37...)</span>
+            <InputNumber
+              name='number'
+              labelText='Card number:'
+              useValue={true}
+              inputValue={state.number}
+              maxLength='16'
+              max='9999999999999999'
+              divClassName='form-container'
+              labelClassName='label'
+              autoComplete='off'
+              required={true}
+              inputOnChange={handleInputChange}
+              inputOnFocus={handleInputFocus}
+            />
+            <InputText
+              name='name'
+              labelText='Name on card:'
+              ref={nameOnCardRef}
+              useValue={true}
+              inputValue={state.name}
+              divClassName='form-container'
+              labelClassName='label'
+              autoComplete='on'
+              required={true}
+              inputOnChange={handleInputChange}
+              inputOnFocus={handleInputFocus}
+            />
+            <InputNumber
+              name='expiry'
+              labelText='Valid Thru:'
+              useValue={true}
+              inputValue={state.expiry}
+              maxLength='4'
+              max='9999'
+              divClassName='form-container'
+              labelClassName='label'
+              autoComplete='off'
+              required={true}
+              inputOnChange={handleInputChange}
+              inputOnFocus={handleInputFocus}
+            />
+            <InputNumber
+              name='cvc'
+              labelText='CVC:'
+              useValue={true}
+              inputValue={state.cvc}
+              maxLength='3'
+              max='999'
+              divClassName='form-container'
+              labelClassName='label'
+              autoComplete='off'
+              required={true}
+              inputOnChange={handleInputChange}
+              inputOnFocus={handleInputFocus}
+            />
+          </div>
           {/* Submit */}
           <InputSubmit
             ref={submitFormRef}

@@ -243,6 +243,7 @@ function Nav (props) {
         setToggleRegisterModal={(x) => {setToggleRegisterModal(x);}}
         setUserLoggedIn={(x) => {props.UserLoggedInFunction(x);}}
         setToken={(x) => {setToken(x);}}
+        csrfToken={props.csrfToken}
         HideModalFunction={() => {setToggleRegisterModal('hide-modal');}}
         ShowLoginModalFunction={() => {setToggleLoginModal('show-modal');}}
         FirstnameFunction={props.FirstnameFunction}
@@ -266,6 +267,7 @@ function Nav (props) {
         setToggleLoginModal={(x) => {setToggleLoginModal(x);}}
         setUserLoggedIn={(x) => {props.UserLoggedInFunction(x);}}
         setToken={(x) => {setToken(x);}}
+        csrfToken={props.csrfToken}
         HideModalFunction={() => {setToggleLoginModal('hide-modal');}}
         ShowRecoveryModalFunction={() => {setToggleRecoveryModal('show-modal');}}
         ShowRegisterModalFunction={() => {setToggleRegisterModal('show-modal');}}
@@ -293,6 +295,7 @@ function Nav (props) {
         setToggleRecoveryModal={(x) => {setToggleRecoveryModal(x);}}
         setUserLoggedIn={(x) => {props.UserLoggedInFunction(x);}}
         setToken={(x) => {setToken(x);}}
+        csrfToken={props.csrfToken}
         HideModalFunction={() => {setToggleRecoveryModal('hide-modal');}}
         FirstnameFunction={props.FirstnameFunction}
         SurnameFunction={props.SurnameFunction}
@@ -316,6 +319,7 @@ function Nav (props) {
         setToggleLogoutModal={(x) => {setToggleLogoutModal(x);}}
         setUserLoggedIn={(x) => {props.UserLoggedInFunction(x);}}
         setToken={(x) => {setToken(x);}}
+        csrfToken={props.csrfToken}
         HideModalFunction={() => {setToggleLogoutModal('hide-modal');}}
         FirstnameFunction={props.FirstnameFunction}
         SurnameFunction={props.SurnameFunction}
@@ -342,6 +346,7 @@ function Nav (props) {
         setToggleProfileModal={(x) => {setToggleProfileModal(x);}}
         setUserLoggedIn={(x) => {props.UserLoggedInFunction(x);}}
         setToken={(x) => {setToken(x);}}
+        csrfToken={props.csrfToken}
         HideModalFunction={() => {setToggleProfileModal('hide-modal');}}
         ShowRecoveryModalFunction={() => {setToggleRecoveryModal('show-modal');}}
         FirstnameFunction={props.FirstnameFunction}
@@ -367,6 +372,7 @@ function Nav (props) {
         modalDashboardData={modalDashboardData}
         setModalDashboardData={(x) => {setModalDashboardData(x);}}
         HideModalFunction={() => {setToggleDashboardModal('hide-modal');}}
+        csrfToken={props.csrfToken}
       />
       {/* End Modal Dashboard */}
     </div>

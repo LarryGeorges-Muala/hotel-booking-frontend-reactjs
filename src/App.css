@@ -207,6 +207,19 @@
   }
 }
 
+.form-container-card-block {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding-top: 40px;
+  padding-bottom: 20px;
+  max-width: 400px;
+  margin: 20px auto 10px auto;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.form-container-card-block-text {
+  font-size: 10px;
+}
+
 .form-container-element-read-only:read-only {
   background-color: transparent;
   color: #888;
@@ -409,7 +422,7 @@
 .modal-component-alternative-button {
   border: none;
   color: white;
-  padding: 15px 32px;
+  padding: 15px 20px;
   text-align: center;
   text-decoration: none;
   display: inline-block;

@@ -25,7 +25,9 @@ function ModalRegister (props) {
   /* Handle Form */
   function ManualFormReset() {
     formRef.current?.reset();
+    setSwitchToLogin(false);
     setPassword('');
+    setPasswordConfirm('');
   }
 
   function GenerateRegistration() {
@@ -36,6 +38,8 @@ function ModalRegister (props) {
       formRef.current?.reset();
       setSwitchToLogin(false);
       DisplayErrors('');
+      setPassword('');
+      setPasswordConfirm('');
     }
 
     /* Handle Errors */
@@ -50,6 +54,8 @@ function ModalRegister (props) {
     function EnableSwicthModal() {
       DisplayErrors(`Existing account... Please login...`);
       setSwitchToLogin(true);
+      setPassword('');
+      setPasswordConfirm('');
     }
     function SwicthModal() {
       CloseModal();
@@ -68,90 +74,110 @@ function ModalRegister (props) {
         if (form.reportValidity()) {
           const formData = new FormData(form);
           const data = Object.fromEntries(formData.entries());
-
           // LoggerInfo(data);
 
           try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND}/users/verify/`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND}/booking/users/verify/`, {
               method: "POST",
               headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': props.csrfToken,
               },
-              body: JSON.stringify(data)
+              body: JSON.stringify(data),
+              credentials: 'include',
             });
             let result = await response.json();
-            result = JSON.stringify(result);
-            result = JSON.parse(result);
+            // result = JSON.stringify(result);
+            // result = JSON.parse(result);
             // LoggerInfo(typeof result);
             // LoggerInfo(`Success: ${result}`);
+            // LoggerInfo(result.status);
+            // LoggerInfo(typeof result.status);
+            // LoggerInfo(result.code);
             // LoggerInfo(result[0]);
 
-            if (result.length === 0) {
+            if (result.code === 400) {
+              throw new Error("Bad request.");
+            }
+
+            if (result.code === 404) {
               // LoggerInfo("CREATE USER");
-              const createUser = await fetch(`${import.meta.env.VITE_BACKEND}/users/`, {
+              const createUser = await fetch(`${import.meta.env.VITE_BACKEND}/booking/users/register/`, {
                 method: "POST",
                 headers: {
                   'Content-Type': 'application/json',
                   'X-CSRFToken': props.csrfToken,
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data),
+                credentials: 'include',
               });
               let createUserResult = await createUser.json();
-              createUserResult = JSON.stringify(createUserResult);
-              createUserResult = JSON.parse(createUserResult);
-              // LoggerInfo(typeof createUserResult);
-              // LoggerInfo(`Success: ${createUserResult}`);
-              // LoggerInfo(createUserResult.accessToken);
 
-              // Issue JWT Token
-              props.setToken(createUserResult.accessToken);
-
-              // Create Redis Session
-              const accessClient = props.ip;
-              const sessionObj = {
-                'accessToken': createUserResult.accessToken,
-                'accessClient': accessClient,
-                'username': createUserResult.username,
-                'userId': createUserResult.userId,
-                'firstname': data.firstname,
-                'surname': data.surname,
-                'email': data.email,
-                'title': '',
-                'phone': ''
+              if (createUserResult.code === 400) {
+                throw new Error("Bad request.");
               }
-              // LoggerInfo("CREATE SESSION");
-              const createSession = await fetch(`${import.meta.env.VITE_BACKEND}/booking/session/`, {
-                method: "POST",
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-CSRFToken': props.csrfToken,
-                },
-                body: JSON.stringify(sessionObj)
-              });
-              await createSession.json();
-              // let createSessionResult = await createSession.json();
-              // createSessionResult = JSON.stringify(createSessionResult);
-              // createSessionResult = JSON.parse(createSessionResult);
-              // LoggerInfo(typeof createSessionResult);
-              // LoggerInfo(`Success: ${createSessionResult}`);
-              // LoggerInfo(createSessionResult.message);
 
-              // Pre-fill booking fields
-              props.ResetEmailLoginRegisterFunction('');
-              props.EmailFunction(data.email);
-              props.FirstnameFunction(FunctionCapitalizeFirstLetter(data.firstname));
-              props.SurnameFunction(FunctionCapitalizeFirstLetter(data.surname));
-              props.TitleFunction('');
-              props.PhoneNumberFunction('');
+              if (createUserResult.code === 404) {
+                throw new Error("Bad request.");
+              }
 
-              // Lock changing email unless logging out
-              props.EmailReadOnlyFunction(true);
+              if (createUserResult.code === 200) {
+                // createUserResult = JSON.stringify(createUserResult);
+                // createUserResult = JSON.parse(createUserResult);
+                // LoggerInfo(typeof createUserResult);
+                // LoggerInfo(`Success: ${createUserResult}`);
+                // LoggerInfo(createUserResult.data.accessToken);
 
-              // Enable Logged in options
-              props.setUserLoggedIn(true);
+                // Issue JWT Token
+                props.setToken(createUserResult.data.accessToken);
 
-              CloseModal();
+                // Create Redis Session
+                const accessClient = props.ip;
+                const sessionObj = {
+                  'accessToken': createUserResult.data.accessToken,
+                  'accessClient': accessClient,
+                  'username': createUserResult.data.username,
+                  'userId': createUserResult.data.userId,
+                  'firstname': data.firstname,
+                  'surname': data.surname,
+                  'email': data.email,
+                  'title': '',
+                  'phone': ''
+                }
+                // LoggerInfo("CREATE SESSION");
+                const createSession = await fetch(`${import.meta.env.VITE_BACKEND}/booking/session/`, {
+                  method: "POST",
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': props.csrfToken,
+                  },
+                  body: JSON.stringify(sessionObj),
+                  credentials: 'include',
+                });
+                await createSession.json();
+                // let createSessionResult = await createSession.json();
+                // createSessionResult = JSON.stringify(createSessionResult);
+                // createSessionResult = JSON.parse(createSessionResult);
+                // LoggerInfo(typeof createSessionResult);
+                // LoggerInfo(`Success: ${createSessionResult}`);
+                // LoggerInfo(createSessionResult.message);
+
+                // Pre-fill booking fields
+                props.ResetEmailLoginRegisterFunction('');
+                props.EmailFunction(data.email);
+                props.FirstnameFunction(FunctionCapitalizeFirstLetter(data.firstname));
+                props.SurnameFunction(FunctionCapitalizeFirstLetter(data.surname));
+                props.TitleFunction('');
+                props.PhoneNumberFunction('');
+
+                // Lock changing email unless logging out
+                props.EmailReadOnlyFunction(true);
+
+                // Enable Logged in options
+                props.setUserLoggedIn(true);
+
+                CloseModal();
+              }
             } else {
               // LoggerInfo("USER EXISTS");
               EnableSwicthModal();

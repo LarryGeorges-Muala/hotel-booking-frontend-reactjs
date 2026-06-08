@@ -47,7 +47,7 @@ function ModalLogin (props) {
     }
     function SwicthModal() {
       CloseModal();
-      props.ShowRegisternModalFunction();
+      props.ShowRegisterModalFunction();
     }
 
     /* Handle Invalid password */
@@ -78,22 +78,27 @@ function ModalLogin (props) {
           // LoggerInfo(data);
 
           try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND}/users/verify/`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND}/booking/users/verify/`, {
               method: "POST",
               headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': props.csrfToken,
               },
-              body: JSON.stringify(data)
+              body: JSON.stringify(data),
+              credentials: 'include',
             });
             let result = await response.json();
-            result = JSON.stringify(result);
-            result = JSON.parse(result);
+            // result = JSON.stringify(result);
+            // result = JSON.parse(result);
             // LoggerInfo(typeof result);
             // LoggerInfo(`Success: ${result}`);
             // LoggerInfo(result[0]);
 
-            if (result.length !== 0) {
+            if (result.code === 400) {
+              throw new Error("Bad request.");
+            }
+
+            if (result.code === 200) {
               // LoggerInfo("USER EXISTS");
               const accessClient = props.ip;
               const sessionObj = {
@@ -102,38 +107,39 @@ function ModalLogin (props) {
                 'email': data.email
               }
               // LoggerInfo(sessionObj);
-              const fetchUser = await fetch(`${import.meta.env.VITE_BACKEND}/users/login/`, {
+              const fetchUser = await fetch(`${import.meta.env.VITE_BACKEND}/booking/users/login/`, {
                 method: "POST",
                 headers: {
                   'Content-Type': 'application/json',
                   'X-CSRFToken': props.csrfToken,
                 },
-                body: JSON.stringify(sessionObj)
+                body: JSON.stringify(sessionObj),
+                credentials: 'include',
               });
               let fetchUserResult = await fetchUser.json();
-              fetchUserResult = JSON.stringify(fetchUserResult);
-              fetchUserResult = JSON.parse(fetchUserResult);
-              // LoggerInfo(typeof fetchUserResult);
-              // LoggerInfo(`Success: ${fetchUserResult}`);
-              // LoggerInfo(fetchUserResult.accessToken);
+              // fetchUserResult = JSON.stringify(fetchUserResult);
+              // fetchUserResult = JSON.parse(fetchUserResult);
+              LoggerInfo(typeof fetchUserResult);
+              LoggerInfo(`Success: ${fetchUserResult}`);
+              LoggerInfo(fetchUserResult.data.accessToken);
 
               if (fetchUserResult) {
 
-                if (Object.hasOwn(fetchUserResult, 'valid')) {
+                if (Object.hasOwn(fetchUserResult.data, 'valid')) {
 
-                  if (fetchUserResult.valid) {
+                  if (fetchUserResult.data.valid) {
 
                     // Create Session
                     const sessionRedisObj = {
-                      'accessToken': fetchUserResult.accessToken,
+                      'accessToken': fetchUserResult.data.accessToken,
                       'accessClient': accessClient,
-                      'username': fetchUserResult.username,
-                      'userId': fetchUserResult.userId,
-                      'firstname': fetchUserResult.firstname,
-                      'surname': fetchUserResult.surname,
-                      'email': fetchUserResult.email,
-                      'title': fetchUserResult.title,
-                      'phone': fetchUserResult.phone
+                      'username': fetchUserResult.data.username,
+                      'userId': fetchUserResult.data.userId,
+                      'firstname': fetchUserResult.data.firstname,
+                      'surname': fetchUserResult.data.surname,
+                      'email': fetchUserResult.data.email,
+                      'title': fetchUserResult.data.title,
+                      'phone': fetchUserResult.data.phone
                     }
                     const createSession = await fetch(`${import.meta.env.VITE_BACKEND}/booking/session/`, {
                       method: "POST",
@@ -141,7 +147,8 @@ function ModalLogin (props) {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': props.csrfToken,
                       },
-                      body: JSON.stringify(sessionRedisObj)
+                      body: JSON.stringify(sessionRedisObj),
+                      credentials: 'include',
                     });
                     await createSession.json();
                     // let createSessionResult = await createSession.json();
@@ -151,30 +158,30 @@ function ModalLogin (props) {
                     // LoggerInfo(`Success: ${createSessionResult}`);
                     // LoggerInfo(createSessionResult.message);
 
-                    if (Object.hasOwn(fetchUserResult, 'accessToken')) {
-                      props.setToken(fetchUserResult.accessToken);
+                    if (Object.hasOwn(fetchUserResult.data, 'accessToken')) {
+                      props.setToken(fetchUserResult.data.accessToken);
                     }
 
-                    if (Object.hasOwn(fetchUserResult, 'email')) {
+                    if (Object.hasOwn(fetchUserResult.data, 'email')) {
                       props.ResetEmailLoginRegisterFunction('');
-                      props.EmailFunction(fetchUserResult.email);
+                      props.EmailFunction(fetchUserResult.data.email);
                       props.EmailReadOnlyFunction(true);
                     }
 
-                    if (Object.hasOwn(fetchUserResult, 'firstname')) {
-                      props.FirstnameFunction(fetchUserResult.firstname);
+                    if (Object.hasOwn(fetchUserResult.data, 'firstname')) {
+                      props.FirstnameFunction(fetchUserResult.data.firstname);
                     }
 
-                    if (Object.hasOwn(fetchUserResult, 'surname')) {
-                      props.SurnameFunction(fetchUserResult.surname);
+                    if (Object.hasOwn(fetchUserResult.data, 'surname')) {
+                      props.SurnameFunction(fetchUserResult.data.surname);
                     }
 
-                    if (Object.hasOwn(fetchUserResult, 'title')) {
-                      props.TitleFunction(fetchUserResult.title);
+                    if (Object.hasOwn(fetchUserResult.data, 'title')) {
+                      props.TitleFunction(fetchUserResult.data.title);
                     }
 
-                    if (Object.hasOwn(fetchUserResult, 'phone')) {
-                      props.PhoneNumberFunction(fetchUserResult.phone);
+                    if (Object.hasOwn(fetchUserResult.data, 'phone')) {
+                      props.PhoneNumberFunction(fetchUserResult.data.phone);
                     }
 
                     // Enable Logged in options

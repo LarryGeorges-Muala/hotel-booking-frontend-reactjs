@@ -39,7 +39,8 @@ function ModalLogout (props) {
               'Content-Type': 'application/json',
               'X-CSRFToken': props.csrfToken,
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include',
           });
           await response.json();
           // let result = await response.json();

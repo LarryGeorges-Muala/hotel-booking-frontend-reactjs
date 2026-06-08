@@ -54,22 +54,27 @@ function ModalProfile (props) {
           // LoggerInfo(data);
 
           try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND}/users/verify/`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND}/booking/users/verify/`, {
               method: "POST",
               headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': props.csrfToken,
               },
-              body: JSON.stringify(data)
+              body: JSON.stringify(data),
+              credentials: 'include',
             });
             let result = await response.json();
-            result = JSON.stringify(result);
-            result = JSON.parse(result);
+            // result = JSON.stringify(result);
+            // result = JSON.parse(result);
             // LoggerInfo(typeof result);
             // LoggerInfo(`Success: ${result}`);
             // LoggerInfo(result[0]);
 
-            if (result.length !== 0) {
+            if (result.code === 400) {
+              throw new Error("Bad request.");
+            }
+
+            if (result.code === 200) {
               // LoggerInfo("USER EXISTS");
               // JWT Token
               const accessToken = props.token;
@@ -87,25 +92,26 @@ function ModalProfile (props) {
                 'title': data.title,
                 'phone': data.phone
               }
-              const updateUser = await fetch(`${import.meta.env.VITE_BACKEND}/users/profile/`, {
+              const updateUser = await fetch(`${import.meta.env.VITE_BACKEND}/booking/users/profile/`, {
                 method: "POST",
                 headers: {
                   'Content-Type': 'application/json',
                   'Authorization': `Bearer ${accessToken}`,
                   'X-CSRFToken': props.csrfToken,
                 },
-                body: JSON.stringify(sessionObj)
+                body: JSON.stringify(sessionObj),
+                credentials: 'include',
               });
               let updateUserResult = await updateUser.json();
-              updateUserResult = JSON.stringify(updateUserResult);
-              updateUserResult = JSON.parse(updateUserResult);
+              // updateUserResult = JSON.stringify(updateUserResult);
+              // updateUserResult = JSON.parse(updateUserResult);
               // LoggerInfo(typeof updateUserResult);
               // LoggerInfo(`Success: ${updateUserResult}`);
               // LoggerInfo(updateUserResult.accessToken);
 
               if (updateUserResult) {
-                if (Object.hasOwn(updateUserResult, 'valid')) {
-                  if (updateUserResult.valid) {
+                if (Object.hasOwn(updateUserResult.data, 'valid')) {
+                  if (updateUserResult.data.valid) {
 
                     // Create Redis Session
                     // LoggerInfo("CREATE SESSION");
@@ -115,7 +121,8 @@ function ModalProfile (props) {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': props.csrfToken,
                       },
-                      body: JSON.stringify(sessionObj)
+                      body: JSON.stringify(sessionObj),
+                      credentials: 'include',
                     });
                     await createSession.json();
                     // let createSessionResult = await createSession.json();
