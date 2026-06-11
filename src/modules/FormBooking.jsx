@@ -242,7 +242,7 @@ function FormBooking (props) {
         data.check_out = bookingDatesCheckout;
         data.unit_id = props.selectedUnitId;
         try {
-          const response = await fetch(`${import.meta.env.VITE_BACKEND}/booking/`, {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND}/booking/create/`, {
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
