@@ -17,8 +17,7 @@ export default defineConfig({
     allowedHosts: [
       "localhost",
       "frontend",
-      "frontend-react",
-      "host.docker.internal"
+      "frontend-react"
     ],
   },
 });
